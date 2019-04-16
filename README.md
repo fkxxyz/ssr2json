@@ -12,6 +12,8 @@ shell 脚本，用于批量处理，从标准输入的每一行的 ssr:// 链接
 shell 脚本，用于批量处理，从标准输入的每一行的订阅链接，解析出 ssr:// 链接输出到标准输出。
 ### ssrsubsave
 shell 脚本，用于批量处理，从标准输入的每一行的订阅链接，自动调用 ssrsub 和 ssr2jsonsave 保存至指定文件夹。
+### ssrctl
+shell 脚本，用于储存和管理订阅链接和节点，可以选择性的切换某个节点（需要python版的[shadowsocksr](https://github.com/shadowsocksr-backup/shadowsocksr)支持，并添加进systemd 服务设置）。
 
 ## 安装方法
 克隆该仓库

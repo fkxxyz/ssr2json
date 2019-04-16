@@ -1,0 +1,124 @@
+#!/bin/bash
+
+ssr_dir=~/.ssrctl
+sub_list_file=${ssr_dir}/sublist.conf
+
+
+function s_base64d(){
+    cat | sed 'y/-_/+\//' | base64 -d 2>/dev/null
+}
+
+init(){
+	mkdir -p "$ssr_dir"
+}
+
+die(){
+	echo "$*" >&2
+	exit 1
+}
+
+node_select(){
+	local conf="$*"
+	[[ "$conf" =~ [[:digit:]]+$  ]] && conf="$(find "$ssr_dir" -name '*.json' | sed -n "${conf}p")"
+	[ -f "$conf" ] || return 1
+	[[ "$conf" =~ \.json$ ]] || return 1
+	echo "$conf"
+}
+
+node_connect(){
+	local conf="$(node_select $*)"
+	sudo cp -f "$conf" /etc/shadowsocksr/default.json
+	systemctl restart shadowsocksr@default
+}
+
+node_del(){
+	local conf
+	for conf in $*; do
+		conf="$(node_select $*)"
+		rm -f "$conf"
+	done
+}
+
+node_list(){
+	find "$ssr_dir" -name '*.json' | nl
+}
+
+sub_list(){
+	local sub_n
+	for sub_n in $(ls "$ssr_dir"); do
+		[ -f "$ssr_dir/$sub_n/sub_addr.txt" ] && echo -en "$sub_n\t" && cat "$ssr_dir/$sub_n/sub_addr.txt"
+	done
+}
+
+sub_getnewnum(){
+	local i
+	for ((i=0;;i++)); do
+		[ ! -e "${ssr_dir}/$i" ] && echo $i && return
+	done
+}
+
+sub_updateone(){
+	local sublink="$(cat "$ssr_dir/$1/sub_addr.txt")"
+	echo "$sublink" | ssrsubsave "$ssr_dir/$sub_n"
+}
+
+sub_update(){
+	local sub_n
+	for sub_n in $(ls "$ssr_dir"); do
+		[ -f "$ssr_dir/$sub_n/sub_addr.txt" ] && sub_updateone "$sub_n"
+	done
+}
+
+sub_del(){
+	local sub_n
+	for sub_n in $*; do
+		[ -f "$ssr_dir/$sub_n/sub_addr.txt" ] && rm -rf "$ssr_dir/$sub_n"
+	done
+}
+
+sub_add(){
+	local sublink sub_n
+	for sublink in "$*"; do
+		[ "$sublink" ] || continue
+		sub_n=$(sub_getnewnum)
+		mkdir -p "$ssr_dir/$sub_n"
+		echo "$sublink" > "$ssr_dir/$sub_n/sub_addr.txt"
+		sub_updateone "$sub_n"
+	done
+}
+
+
+node(){
+	local command="$1"
+	[ "$command" ] || command=list
+	shift
+	eval "node_$command" "$@"
+}
+
+sub(){
+	local command="$1"
+	[ "$command" ] || command=list
+	shift
+	eval "sub_$command" "$@"
+}
+
+main(){
+	init
+
+	local command="$1"
+	case "$command" in
+		"")
+			command=node
+			;;
+		n)
+			command=node
+			;;
+		s)
+			command=sub
+			;;
+	esac
+	shift
+	eval "$command" "$@"
+}
+
+main "$@"

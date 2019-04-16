@@ -4,7 +4,7 @@ name=ssr2json
 ver=1.0.0
 bug_report_address="https://github.com/fkxxyz/ssr2json/issues"
 
-extra_tool='ssr2jsonsave ssrsub ssrsubsave'
+extra_tool='ssr2jsonsave ssrsub ssrsubsave ssrctl'
 
 [ "$1" == "clean" ] && \
 	rm -rf aclocal.m4 autom4te.cache compile configure install-sh \
