@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# 批量输入订阅地址，在指定目录中生成所有的json配置
+mkdir -p "$1"
+[ -d "$1" ] || exit 1
+cat | ssrsub | ssr2jsonsave "$1"
+
+
+
+

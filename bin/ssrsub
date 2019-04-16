@@ -1,0 +1,15 @@
+#!/bin/bash
+
+# 安全的 base64 解码（-和_分别替换成+和/并解码，忽略padding）
+function s_base64d(){
+    cat | sed 'y/-_/+\//' | base64 -d 2>/dev/null
+}
+
+# 批量输入订阅地址，输出所有ssr地址
+[ "$1" ] && echo "$1" | "$0" && exit
+
+for url in $(cat); do
+    curl -s "$url" | s_base64d | xargs -i echo {}
+done
+
+
