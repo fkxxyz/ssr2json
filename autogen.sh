@@ -2,7 +2,7 @@
 
 name=ssr2json
 ver=1.0.0
-bug_report_address=https://github.com/fkxxyz/ssr2json/issues
+bug_report_address="https://github.com/fkxxyz/ssr2json/issues"
 
 extra_tool='ssr2jsonsave ssrsub ssrsubsave'
 
@@ -33,7 +33,7 @@ dist_bin_SCRIPTS = ${extra_tool}
 
 autoscan
 sed -e "/AC_INIT(.*)/aAM_INIT_AUTOMAKE" \
-	-e "s/AC_INIT(.*)/AC_INIT([${name}], [${ver}], [${bug_report_address}])/g" \
+	-e "s/AC_INIT(.*)/AC_INIT([${name}], [${ver}], [${bug_report_address//\//\\\/}])/g" \
 	configure.scan \
 	> configure.ac
 autoreconf -if
