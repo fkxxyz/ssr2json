@@ -2,7 +2,7 @@
 
 name=ssr2json
 ver=1.0.0
-bug_report_address=sssssss
+bug_report_address=https://github.com/fkxxyz/ssr2json/issues
 
 extra_tool='ssr2jsonsave ssrsub ssrsubsave'
 
