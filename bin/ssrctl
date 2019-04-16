@@ -43,6 +43,13 @@ node_list(){
 	find "$ssr_dir" -name '*.json' | nl
 }
 
+node_add(){
+	local node
+	for node in $*; do
+		echo $node
+	done | ssr2jsonsave $ssr_dir
+}
+
 sub_list(){
 	local sub_n
 	for sub_n in $(ls "$ssr_dir"); do
