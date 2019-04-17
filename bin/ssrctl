@@ -87,7 +87,7 @@ sub_del(){
 
 sub_add(){
 	local sublink sub_n
-	for sublink in "$*"; do
+	for sublink in $*; do
 		[ "$sublink" ] || continue
 		sub_n=$(sub_getnewnum)
 		mkdir -p "$ssr_dir/$sub_n"
