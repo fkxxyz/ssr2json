@@ -72,7 +72,9 @@ sub_updateone(){
 sub_update(){
 	local sub_n
 	for sub_n in $(ls "$ssr_dir"); do
-		[ -f "$ssr_dir/$sub_n/sub_addr.txt" ] && sub_updateone "$sub_n"
+		[ -f "$ssr_dir/$sub_n/sub_addr.txt" ] || continue
+		find "$ssr_dir/$sub_n"/* -maxdepth 0 -type d -exec rm -rf {} \;
+		sub_updateone "$sub_n"
 	done
 }
 
