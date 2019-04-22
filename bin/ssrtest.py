@@ -9,10 +9,15 @@ import threadpool
 import time
 import requests
 import json
+import threading
 
 max_seconds = 10
 max_parallel_test = 16
 max_test_time = 4
+
+remain = 0
+
+event = threading.Event()
 
 
 def get_a_free_port():
@@ -22,11 +27,9 @@ def get_a_free_port():
     s.close()
     return port
 
-def test_a_node(file):
-    # file : a json file path
-    # return : respone milliseconds
+def test_a_node(node):
     port = get_a_free_port()
-    process = subprocess.Popen(['sslocal', "-l", str(port), "-c", file])
+    process = subprocess.Popen(['sslocal', "-l", str(port), "-c", node['file']])
     proxies = {'http': 'socks5://127.0.0.1:' + str(port), 'https': 'socks5://127.0.0.1:' + str(port)}
     time.sleep(1)
     
@@ -46,11 +49,11 @@ def test_a_node(file):
         if interval < min_seconds:
             min_seconds = interval
     process.send_signal(signal.SIGINT)
-    return min_seconds
 
-def test_node_into_info(node_info):
-    result = test_a_node(node_info['file'])
-    node_info['result'] = 'x' if result == max_seconds else str(result)
+    node_info['result'] = -1 if min_seconds == max_seconds else min_seconds
+
+    remain -= 1
+    event.set()
 
 def main():
     node_arr = []
@@ -60,11 +63,14 @@ def main():
         node_arr.append(new_node)
     
     pool = threadpool.ThreadPool(max_parallel_test)
-    reqs = threadpool.makeRequests(test_node_into_info, node_arr)
+    reqs = threadpool.makeRequests(test_a_node, node_arr)
     [pool.putRequest(req) for req in reqs]
-    pool.wait()
-    print(node_arr)
     
+    
+    remain = len(node_arr)
+    while remain > 0:
+        event.eait()
+
 
 if __name__ == '__main__':
     main()
