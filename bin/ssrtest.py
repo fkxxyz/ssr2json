@@ -13,7 +13,7 @@ import threading
 import queue
 
 max_seconds = 4
-max_parallel_test = 16
+max_parallel_test = 4
 max_test_time = 4
 
 remain = 0
@@ -23,6 +23,10 @@ devNull = open(os.devnull, 'w')
 event = threading.Event()
 
 queue_out = queue.Queue()
+
+def conv_delay(v):
+    if v == 0:
+        return 'x'
 
 
 def get_a_free_port():
@@ -53,7 +57,7 @@ def test_a_node(node):
             if interval < min_seconds:
                 min_seconds = interval
         else:
-            min_seconds = -1
+            min_seconds = 0
         
         node["tested"] = t
         node['delay_list'].append(str(min_seconds))
