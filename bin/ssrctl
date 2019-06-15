@@ -96,6 +96,9 @@ sub_add(){
 	done
 }
 
+runtest(){
+	echo test
+}
 
 node(){
 	local command="$1"
@@ -114,20 +117,27 @@ sub(){
 main(){
 	init
 
-	local command="$1"
-	case "$command" in
+	case "$1" in
 		"")
 			command=node
 			;;
-		n)
+		n|no|nod|node)
 			command=node
 			;;
-		s)
+		s|su|sub)
 			command=sub
+			;;
+		t|te|tes|test)
+			command=runtest
+			;;
+		*)
+			die '命令格式出错。'
+			return 1
 			;;
 	esac
 	shift
-	eval "$command" "$@"
+	"$command" "$@"
 }
 
 main "$@"
+
