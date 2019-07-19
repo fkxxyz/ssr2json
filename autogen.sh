@@ -1,7 +1,7 @@
 #!/bin/bash
 
 name=ssr2json
-ver=1.0.0
+ver=1.0.1
 bug_report_address="https://github.com/fkxxyz/ssr2json/issues"
 
 extra_tool='ssr2jsonsave ssrsub ssrsubsave ssrctl'
