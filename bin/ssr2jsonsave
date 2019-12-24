@@ -9,13 +9,16 @@ function fastjqstr(){
 # 批量输入ssr链接，在指定目录中生成所有的json配置
 mkdir -p "$1"
 [ -d "$1" ] || exit 1
+
+i=1
 for url in $(cat); do
     json="$(ssr2json "$url")"
     group="$(echo "$json" | fastjqstr group)"
     remarks="$(echo "$json" | fastjqstr remarks)"
 
     mkdir -p "$1/$group"
-    echo "$json" > "$1/$group/${remarks//\//_}.json"
+    echo "$json" > "$1/$group/$i-${remarks//\//_}.json"
+    i=$((i+1))
 done
 
 
