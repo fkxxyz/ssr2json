@@ -28,7 +28,7 @@ node_select(){
 node_connect(){
 	local conf="$(node_select $*)"
 	sudo cp -f "$conf" /etc/shadowsocksr/default.json
-	sudo systemctl restart shadowsocksr@default
+	sudo systemctl restart shadowsocksr-libev@default.service
 }
 
 node_del(){

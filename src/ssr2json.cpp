@@ -81,7 +81,8 @@ int main(int argc, char *argv[]){
 
 	// 将最后一个参数的 '/' 替换成 '\0' ，得出编码后的 password
 	p = strchr(ssr_param.param[5], '/');
-	*(p++) = '\0';
+	if (p)
+		*(p++) = '\0';
 
 	// 用来存放已经解码过的数据（可以存多个字符串参数）
 	char decval[1024];
@@ -95,27 +96,29 @@ int main(int argc, char *argv[]){
 	p_decval += dec_len + 1;
 
 	// 对 '?' 之后的数据根据 & 分割，得到所有其他参数
-	p = strchr(p, '?');
-	char **pkey = ssr_data.key;
-	for (; p; p = strchr(p, '&')){
-		*(p++) = '\0';
-		*(pkey++) = p;
-	}
+	if (p){
+		p = strchr(p, '?');
+		char **pkey = ssr_data.key;
+		for (; p; p = strchr(p, '&')){
+			*(p++) = '\0';
+			*(pkey++) = p;
+		}
 
-	// 对所有其他参数进行解码
-	*pkey = nullptr;
-	for (int i = 0; ssr_data.key[i]; i++){
-		p = strchr(ssr_data.key[i], '=');
-		*(p++) = '\0';
-		if (isdigitstr(p)){
-			ssr_data.isdigit[i] = true;
-			ssr_data.value[i] = p;
-		} else {
-			ssr_data.isdigit[i] = false;
-			base64_decode(p, p_decval, &dec_len, base64_decode_table_s);
-			p_decval[dec_len] = '\0';
-			ssr_data.value[i] = p_decval;
-			p_decval += dec_len + 1;
+		// 对所有其他参数进行解码
+		*pkey = nullptr;
+		for (int i = 0; ssr_data.key[i]; i++){
+			p = strchr(ssr_data.key[i], '=');
+			*(p++) = '\0';
+			if (isdigitstr(p)){
+				ssr_data.isdigit[i] = true;
+				ssr_data.value[i] = p;
+			} else {
+				ssr_data.isdigit[i] = false;
+				base64_decode(p, p_decval, &dec_len, base64_decode_table_s);
+				p_decval[dec_len] = '\0';
+				ssr_data.value[i] = p_decval;
+				p_decval += dec_len + 1;
+			}
 		}
 	}
 
